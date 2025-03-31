@@ -11,20 +11,20 @@ O ***AdaptiveFlow*** é mais do que uma biblioteca — é um padrão para constr
 O padrão ***AdaptiveFlow*** organiza a execução de tarefas em um pipeline estruturado, mas flexível, baseado nos seguintes componentes:
 1. **Passos (Steps):**
     - Representados por `IFlowStep` (sem retorno) ou `IFlowStep<TResponse>` (com retorno).
-    - Cada passo é uma unidade independente de lógica que opera em um `FlowContext` (um contêiner de dados compartilhado).
-    - Exemplo: Um passo pode validar uma entrada, enquanto outro criptografa dados.
+    - Cada step é uma unidade independente de lógica que opera em um `FlowContext` (um contêiner de dados compartilhado).
+    - Exemplo: Um step pode validar uma entrada, enquanto outro criptografa dados.
 
 2. **Configuração (FlowConfiguration):**
-    - Define a sequência de passos, suas condições de execução, dependências e se devem rodar em paralelo.
+    - Define a sequência de steps, suas condições de execução, dependências e se devem rodar em paralelo.
     - Suporta configuração programática ou dinâmica via ***JSON***, permitindo ajustes em tempo de design ou execução.
 
 3. **Gerenciador (FlowManager):**
-    - Orquestra a execução dos passos, respeitando dependências e gerenciando concorrência e paralelismo.
+    - Orquestra a execução dos steps, respeitando dependências e gerenciando concorrência e paralelismo.
     - Usa um canal (`Channel<FlowContext>`) para enfileirar e processar contextos assincronamente, com limites configuráveis para alta carga.
     - Permite logging opcional e substituição do processamento do canal via `IChannelProcessor`.
 
 4. **Contexto (FlowContext):**
-    - Um dicionário de chave-valor que transporta dados entre os passos, promovendo comunicação fluida e estado compartilhado.
+    - Um dicionário de chave-valor que transporta dados entre os steps, promovendo comunicação fluida e estado compartilhado.
 
 ### Princípios do Padrão
 
@@ -36,17 +36,17 @@ O padrão ***AdaptiveFlow*** organiza a execução de tarefas em um pipeline est
 
 ### Fluxo de Execução
 
-1. O cliente define os passos e suas configurações em um `FlowConfiguration`.
+1. O cliente define os steps e suas configurações em um `FlowConfiguration`.
 2. O `FlowManager` recebe a configuração e inicializa um canal para enfileirar contextos.
-3. Cada contexto é processado, executando os passos na ordem determinada por dependências:
-    - Passos sequenciais rodam um após o outro.
-    - Passos paralelos rodam simultaneamente, respeitando `maxParallelism`.
-4. Resultados são coletados no `FlowResult`, incluindo sucesso/erro e saídas dos passos.
+3. Cada contexto é processado, executando os steps na ordem determinada por dependências:
+    - Steps sequenciais rodam um após o outro.
+    - Steps paralelos rodam simultaneamente, respeitando `maxParallelism`.
+4. Resultados são coletados no `FlowResult`, incluindo sucesso/erro e saídas dos steps.
 
 ### Benefícios
 
 - **Adaptabilidade:** Ajuste o fluxo dinamicamente sem recompilar o código.
-- **Manutenção:** Passos isolados simplificam debugging e evolução do sistema.
+- **Manutenção:** Steps isolados simplificam debugging e evolução do sistema.
 - **Reutilização:** Use o mesmo padrão em diferentes partes do projeto ou em projetos distintos.
 
 ## Getting Started
@@ -121,7 +121,7 @@ Adote nomes significativos e padronizados:
 ### Configurando e Executando um Fluxo
 
 1. **Crie o Modelo e os Steps**
-    - Defina o modelo de entrada e os passos que processarão os dados:
+    - Defina o modelo de entrada e os steps que processarão os dados:
     ```csharp
     namespace MyProject.Models
     {
@@ -138,7 +138,7 @@ Adote nomes significativos e padronizados:
 
     namespace MyProject.Steps
     {
-        // Passo que loga os dados recebidos
+        // Step que loga os dados recebidos
         public class LogStep : IFlowStep
         {
             public async Task ExecuteAsync(FlowContext context, CancellationToken   cancellationToken)
@@ -151,7 +151,7 @@ Adote nomes significativos e padronizados:
             }
         }
 
-        // Passo que calcula algo baseado na idade
+        // Step que calcula algo baseado na idade
         public class ComputeStep : IFlowStep<int>
         {
             public async Task<int> ExecuteAsync(FlowContext context,    CancellationToken cancellationToken)
@@ -243,7 +243,7 @@ Adote nomes significativos e padronizados:
     Usuário recebido: João, Idade: 30
     ```
 
-> ***"Nota: Para configuração dinâmica, você pode usar FlowConfiguration.FromJson com um JSON e um registro de passos. Veja a documentação avançada para detalhes."***
+> ***"Nota: Para configuração dinâmica, você pode usar FlowConfiguration.FromJson com um JSON e um registro de steps. Veja a documentação avançada para detalhes."***
 
 # Contribuições
 Sinta-se à vontade para abrir issues ou pull requests no repositório. Sugestões para melhorar a biblioteca são bem-vindas!
