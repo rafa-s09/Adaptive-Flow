@@ -170,8 +170,8 @@ Adote nomes significativos e padronizados:
     - Registre os Steps no contêiner de injeção de dependência:
     ```csharp
     var services = new ServiceCollection();
-    services.AddTransient<MeuProjeto.Steps.LogStep>();
-    services.AddTransient<MeuProjeto.Steps.ComputeStep>();
+    services.AddTransient<MyProject.Steps.LogStep>();
+    services.AddTransient<MyProject.Steps.ComputeStep>();
     var serviceProvider = services.BuildServiceProvider();
     ```
 
@@ -181,7 +181,7 @@ Adote nomes significativos e padronizados:
     using AdaptiveFlow;
     using Microsoft.AspNetCore.Mvc;
 
-    namespace MeuProjeto.Controllers
+    namespace MyProject.Controllers
     {
         [ApiController]
         [Route("api/[controller]")]
@@ -192,13 +192,13 @@ Adote nomes significativos e padronizados:
             public HomeController(IServiceProvider serviceProvider)
             {
                 var config = new FlowConfiguration()
-                    .AddStep(serviceProvider.GetRequiredService<MeuProjeto.Steps.   LogStep>(), "Log")
-                    .AddStep(serviceProvider.GetRequiredService<MeuProjeto.Steps.   ComputeStep>(), "Compute", dependsOn: new[] { "Log" });
+                    .AddStep(serviceProvider.GetRequiredService<MyProject.Steps.   LogStep>(), "Log")
+                    .AddStep(serviceProvider.GetRequiredService<MyProject.Steps.   ComputeStep>(), "Compute", dependsOn: new[] { "Log" });
                 _flowManager = new FlowManager(config);
             }
 
             [HttpPost("mypost")]
-            public async Task<IActionResult> MyPost([FromBody] MeuProjeto.Models.UserModel request, CancellationToken cancellationToken)
+            public async Task<IActionResult> MyPost([FromBody] MyProject.Models.UserModel request, CancellationToken cancellationToken)
             {
                 var context = new FlowContext();
                 context.Data["UserModel"] = request; // Passa os dados da   requisição para o contexto
