@@ -17,7 +17,6 @@ namespace LoginSample.Controllers
         {
             _criptografiaService = criptografiaService;
             _usuarioRepository = usuarioRepository;
-
         }
 
         [HttpPost("cadastro")]
@@ -30,7 +29,7 @@ namespace LoginSample.Controllers
 
             var config = new FlowConfiguration()
                 .AddStep(new ValidarEntradaStep())
-                .AddStep(new CriptografarPassportStep(_criptografiaService))
+                .AddStep(new CriptografarPassportStep(_criptografiaService))              
                 .AddStep(new SalvarUsuarioStep(_usuarioRepository));
 
             var manager = new FlowManager(config);
