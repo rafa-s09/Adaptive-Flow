@@ -5,10 +5,9 @@ VisualStudioVersion = 17.13.35913.81 d17.13
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdaptiveFlow", "AdaptiveFlow\AdaptiveFlow.csproj", "{EC2B33FE-F951-4BE8-8E59-BC618BE2A389}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
-	ProjectSection(SolutionItems) = preProject
-		.editorconfig = .editorconfig
-	EndProjectSection
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{F021E22D-A337-4A69-BAC5-4C9E7610DA20}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdaptiveFlow.APISample.Default", "AdaptiveFlow.APISample.Default\AdaptiveFlow.APISample.Default.csproj", "{0C54F3C8-4AEF-4E37-B8E4-C6A67EE49C7A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -20,9 +19,16 @@ Global
 		{EC2B33FE-F951-4BE8-8E59-BC618BE2A389}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EC2B33FE-F951-4BE8-8E59-BC618BE2A389}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EC2B33FE-F951-4BE8-8E59-BC618BE2A389}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0C54F3C8-4AEF-4E37-B8E4-C6A67EE49C7A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0C54F3C8-4AEF-4E37-B8E4-C6A67EE49C7A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0C54F3C8-4AEF-4E37-B8E4-C6A67EE49C7A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0C54F3C8-4AEF-4E37-B8E4-C6A67EE49C7A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{0C54F3C8-4AEF-4E37-B8E4-C6A67EE49C7A} = {F021E22D-A337-4A69-BAC5-4C9E7610DA20}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {683F12A4-57EE-4DD6-A6A3-4A9099F79CDB}

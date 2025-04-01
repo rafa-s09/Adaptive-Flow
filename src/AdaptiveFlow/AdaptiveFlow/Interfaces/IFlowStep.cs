@@ -38,9 +38,9 @@ public interface IFlowStep
 /// <br/><br/>
 /// Example:
 /// <code>
-/// public class ComputeStep : IFlowStep<int>
+/// public class ComputeStep : IFlowStep&lt;int&gt;
 /// {
-///     public async Task<int> ExecuteAsync(FlowContext context, CancellationToken cancellationToken)
+///     public async Task&lt;int&gt; ExecuteAsync(FlowContext context, CancellationToken cancellationToken)
 ///     {
 ///         cancellationToken.ThrowIfCancellationRequested();
 ///         if (!context.Data.ContainsKey("Input")) throw new ArgumentException("Input is required");

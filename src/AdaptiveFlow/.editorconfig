@@ -1,4 +1,0 @@
-﻿[*.{cs,vb}]
-
-# IDE0130: O namespace não corresponde à estrutura da pasta
-dotnet_style_namespace_match_folder = false

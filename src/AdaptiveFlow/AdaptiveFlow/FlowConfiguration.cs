@@ -13,6 +13,20 @@
 /// </summary>
 public class FlowConfiguration
 {
+
+    /// <summary>
+    /// A list of tuples representing the configured flow steps and their execution metadata.
+    /// Each tuple contains the step wrapper, its unique name, an optional condition for execution,
+    /// a flag for parallel execution, and an array of step names it depends on.
+    /// This collection defines the order and behavior of the flow pipeline.
+    /// <br/><br/>
+    /// Example:
+    /// <code>
+    /// var config = new FlowConfiguration();
+    /// config.Steps.Add((new VoidFlowStepWrapper(new LogStep()), "Log", _ =&gt; true, false, Array.Empty&lt;string&gt;()));
+    /// Console.WriteLine(config.Steps[0].StepName); // Outputs: Log
+    /// </code>
+    /// </summary>
     public List<(IFlowStepWrapper Step, string StepName, Func<FlowContext, bool> Condition, bool IsParallel, string[] DependsOn)> Steps { get; } = [];
 
     /// <summary>
@@ -20,7 +34,7 @@ public class FlowConfiguration
     /// <br/><br/>
     /// Example:
     /// <code>
-    /// config.AddStep(new LogStep(), "LogStep", context => (int)context.Data["UserId"] > 0);
+    /// config.AddStep(new LogStep(), "LogStep", context =&gt; (int)context.Data["UserId"] &gt; 0);
     /// </code>
     /// </summary>
     public FlowConfiguration AddStep(IFlowStep step, string stepName, Func<FlowContext, bool>? condition = null, bool isParallel = false, string[]? dependsOn = null)
@@ -51,7 +65,7 @@ public class FlowConfiguration
     /// config.AddSteps(new (IFlowStepWrapper, string)[] 
     /// { 
     ///     (new VoidFlowStepWrapper(new LogStep()), "LogStep"), 
-    ///     (new TypedFlowStepWrapper<int>(new ComputeStep()), "ComputeStep") 
+    ///     (new TypedFlowStepWrapper&lt;int&gt;(new ComputeStep()), "ComputeStep") 
     /// }, dependsOn: new[] { "InitialStep" });
     /// </code>
     /// </summary>
@@ -72,7 +86,7 @@ public class FlowConfiguration
     ///     {'StepType': 'ValidateInput', 'StepName': 'Validate', 'IsParallel': false},
     ///     {'StepType': 'Compute', 'StepName': 'Compute', 'IsParallel': true, 'DependsOn': ['Validate']}
     /// ]";
-    /// var stepRegistry = new Dictionary<string, Type>
+    /// var stepRegistry = new Dictionary&lt;string, Type&gt;
     /// {
     ///     ["ValidateInput"] = typeof(ValidarEntradaStep),
     ///     ["Compute"] = typeof(ComputeStep)
@@ -136,8 +150,8 @@ public class FlowConfiguration
     /// <code>
     /// var config = new FlowConfiguration();
     /// var stepConfig = new StepConfig("Compute", "Compute", true, null);
-    /// var stepInstance = new ComputeStep(); // Implements IFlowStep<int>
-    /// FlowConfiguration.AddTypedStep<int>(config, stepInstance, stepConfig);
+    /// var stepInstance = new ComputeStep(); // Implements IFlowStep&lt;int&gt;
+    /// FlowConfiguration.AddTypedStep&lt;int&gt;(config, stepInstance, stepConfig);
     /// </code>
     /// </summary>
     /// <typeparam name="TResponse">The type of response returned by the typed flow step.</typeparam>
@@ -161,7 +175,7 @@ public class FlowConfiguration
     /// Example:
     /// <code>
     /// var json = @"[{'StepType': 'LogStep', 'StepName': 'Log', 'IsParallel': false, 'DependsOn': null}]";
-    /// var stepConfigs = JsonSerializer.Deserialize<List<StepConfig>>(json);
+    /// var stepConfigs = JsonSerializer.Deserialize&lt;List&lt;StepConfig&gt;&gt;(json);
     /// Console.WriteLine(stepConfigs[0].StepName); // Outputs: Log
     /// </code>
     /// </summary>

@@ -1,4 +1,4 @@
-# Adaptive-Flow
+# Introduction to Adaptive Flow
 
 ***AdaptiveFlow*** is a reusable library and a design pattern for orchestrating asynchronous workflows in .NET. It allows configuring and executing sequences of steps with support for dependencies, parallel execution, optional logging, high performance, and dynamic configuration via ***JSON***. Ideal for applications that require flexible, testable pipelines adaptable to different contexts.
 
@@ -49,33 +49,3 @@ The ***AdaptiveFlow*** pattern organizes task execution into a structured yet fl
 - **Adaptability:** Adjust workflows dynamically without recompiling code.
 - **Maintainability:** Isolated steps simplify debugging and system evolution.
 - **Reusability:** Apply the same pattern across different parts of a project or in separate projects.
-
-# Getting Start
-    
-- See documentation [here](/doc/Summary.md)
-
-# Contributions
-
-Feel free to open issues or pull requests in the repository. Suggestions to improve the library are always welcome!
-
-# MIT License
-
-Copyright (c) 2025 Rafael Souza
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.

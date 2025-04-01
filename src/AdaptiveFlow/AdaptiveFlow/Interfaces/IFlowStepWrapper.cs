@@ -18,16 +18,16 @@
 ///     }
 /// }
 /// 
-/// public class ComputeStep : IFlowStep<int>
+/// public class ComputeStep : IFlowStep&lt;int&gt;
 /// {
-///     public async Task<int> ExecuteAsync(FlowContext context, CancellationToken cancellationToken)
+///     public async Task&lt;int&gt; ExecuteAsync(FlowContext context, CancellationToken cancellationToken)
 ///     {
 ///         return 42;
 ///     }
 /// }
 /// 
 /// IFlowStepWrapper voidWrapper = new VoidFlowStepWrapper(new LogStep());
-/// IFlowStepWrapper typedWrapper = new TypedFlowStepWrapper<int>(new ComputeStep());
+/// IFlowStepWrapper typedWrapper = new TypedFlowStepWrapper&lt;int&gt;(new ComputeStep());
 /// var context = new FlowContext();
 /// var voidResult = await voidWrapper.ExecuteAsync(context, CancellationToken.None); // Returns null
 /// var typedResult = await typedWrapper.ExecuteAsync(context, CancellationToken.None); // Returns 42
@@ -45,7 +45,7 @@ public interface IFlowStepWrapper
     /// Example:
     /// <code>
     /// var context = new FlowContext();
-    /// IFlowStepWrapper wrapper = new TypedFlowStepWrapper<string>(new GreetingStep());
+    /// IFlowStepWrapper wrapper = new TypedFlowStepWrapper&lt;string&gt;(new GreetingStep());
     /// var result = await wrapper.ExecuteAsync(context, CancellationToken.None);
     /// Console.WriteLine(result); // Outputs: "Hello, World!" (or null for void steps)
     /// </code>
