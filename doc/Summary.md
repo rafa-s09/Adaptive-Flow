@@ -1,9 +1,9 @@
 # Summary
 
 ## General
-- [`Introduction`](/Introduction.md)
-- [`Conventions`](/Conventions.md)
-- [`Getting Started`](/Getting%20Started.md)
+- [`Introduction`](Introduction.md)
+- [`Conventions`](Conventions.md)
+- [`Getting Started`](Getting%20Started.md)
 
 ## Interfaces
 - [`IChannelProcessor`](/Interfaces/IChannelProcessor.md)
