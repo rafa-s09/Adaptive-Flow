@@ -1,4 +1,4 @@
-# Summary
+# Documentation Summary
 
 ## General
 - [`Introduction`](Introduction.md)
