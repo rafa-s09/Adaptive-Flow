@@ -1,0 +1,6 @@
+@AdaptiveFlow.APISample_HostAddress = http://localhost:5046
+
+GET {{AdaptiveFlow.APISample_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

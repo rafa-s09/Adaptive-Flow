@@ -7,7 +7,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdaptiveFlow", "AdaptiveFlo
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{F021E22D-A337-4A69-BAC5-4C9E7610DA20}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdaptiveFlow.APISample", "AdaptiveFlow.APISample.Default\AdaptiveFlow.APISample.csproj", "{0C54F3C8-4AEF-4E37-B8E4-C6A67EE49C7A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdaptiveFlow.APISample", "AdaptiveFlow.APISample\AdaptiveFlow.APISample.csproj", "{0C54F3C8-4AEF-4E37-B8E4-C6A67EE49C7A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdaptiveFlow.Tests", "AdaptiveFlow.Test\AdaptiveFlow.Tests.csproj", "{5C7AB681-FB40-4096-8117-A1206DE2D33D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,6 +25,10 @@ Global
 		{0C54F3C8-4AEF-4E37-B8E4-C6A67EE49C7A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0C54F3C8-4AEF-4E37-B8E4-C6A67EE49C7A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0C54F3C8-4AEF-4E37-B8E4-C6A67EE49C7A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5C7AB681-FB40-4096-8117-A1206DE2D33D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5C7AB681-FB40-4096-8117-A1206DE2D33D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5C7AB681-FB40-4096-8117-A1206DE2D33D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5C7AB681-FB40-4096-8117-A1206DE2D33D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
