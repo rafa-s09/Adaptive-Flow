@@ -1,4 +1,4 @@
-namespace AdaptiveFlow.APISample.Default.Models
+namespace AdaptiveFlow.APISample.Models
 {
     public class WeatherForecastModel
     {

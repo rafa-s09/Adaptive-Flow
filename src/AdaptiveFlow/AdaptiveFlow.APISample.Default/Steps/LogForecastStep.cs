@@ -1,6 +1,6 @@
-﻿using AdaptiveFlow.APISample.Default.Models;
+﻿using AdaptiveFlow.APISample.Models;
 
-namespace AdaptiveFlow.APISample.Default.Steps
+namespace AdaptiveFlow.APISample.Steps
 {
     public class LogForecastStep : IFlowStep
     {

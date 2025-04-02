@@ -1,12 +1,22 @@
 # Record `FlowResult`
 
-Represents the result of a flow execution, indicating success or failure along with optional data or error details.
+Represents the result of a flow execution, indicating success or failure along with optional inner results or error details.
+
+The `Success` property indicates whether the flow completed successfully. If successful, `Result` contains the `FlowInnerResults` with context data and step outputs. If unsuccessful, `ErrorMessage` provides details about the failure.
 
 ## Example
 
 ```csharp
-var result = new FlowResult(true, Result: "Operation completed");
-if (result.Success) Console.WriteLine(result.Result); // Outputs: Operation completed
+var result = await flowManager.RunAsync(new FlowContext(), CancellationToken.None);
+if (result.Success)
+{
+    var forecasts = result.Result.StepResults.OfType<IEnumerable<WeatherForecast>>().FirstOrDefault();
+    Console.WriteLine($"Got {forecasts?.Count()} forecasts");
+}
+else
+{
+    Console.WriteLine($"Flow failed: {result.ErrorMessage}");
+}
 ```
 
 ## Parameters
@@ -24,6 +34,6 @@ if (result.Success) Console.WriteLine(result.Result); // Outputs: Operation comp
 
 ### Result
 
-- **Type**: `object?`
-- **Description**: Optional data produced by the flow. Null if no data is returned or on failure.
+- **Type**: `FlowInnerResults?`
+- **Description**: The inner results of the flow execution, including context data and step outputs. Null if the flow failed.
 - **Default**: `null`

@@ -138,7 +138,7 @@ public class FlowManager
                 }
 
                 _logger?.LogInformation("Flow execution completed successfully with {ResultCount} step results.", results.Count);
-                return new FlowResult(true, string.Empty, context.Data);
+                return new FlowResult(true, string.Empty, new FlowInnerResults(context.Data, results.ToList()));
             }
             finally
             {

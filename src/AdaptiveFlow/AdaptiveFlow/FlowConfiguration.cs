@@ -82,16 +82,15 @@ public class FlowConfiguration
     /// <br/><br/>
     /// Example:
     /// <code>
-    /// var json = @"[
-    ///     {'StepType': 'ValidateInput', 'StepName': 'Validate', 'IsParallel': false},
-    ///     {'StepType': 'Compute', 'StepName': 'Compute', 'IsParallel': true, 'DependsOn': ['Validate']}
-    /// ]";
+    /// string jsonConfig = """[{"StepType": "GenerateForecastStep", "StepName": "Generate", "IsParallel": false},{"StepType": "LogForecastStep", "StepName": "Log", "IsParallel": false, "DependsOn": ["Generate"]}]""";     
+    ///
     /// var stepRegistry = new Dictionary&lt;string, Type&gt;
-    /// {
-    ///     ["ValidateInput"] = typeof(ValidarEntradaStep),
-    ///     ["Compute"] = typeof(ComputeStep)
-    /// };
-    /// var config = FlowConfiguration.FromJson(json, serviceProvider, stepRegistry);
+    ///     {
+    ///         { "GenerateForecastStep", typeof(GenerateForecastStep) },
+    ///         { "LogForecastStep", typeof(LogForecastStep) }
+    ///     };
+    ///     
+    /// var config = FlowConfiguration.FromJson(jsonConfig, _serviceProvider, stepRegistry);
     /// </code>
     /// </summary>
     /// <param name="json">A JSON string representing the flow steps, with each step specifying a <see cref="StepConfig.StepType"/> matching a key in the registry.</param>

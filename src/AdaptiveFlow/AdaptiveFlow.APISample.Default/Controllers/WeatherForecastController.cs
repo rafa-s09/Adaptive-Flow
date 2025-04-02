@@ -1,9 +1,8 @@
-using AdaptiveFlow.APISample.Default.Models;
-using AdaptiveFlow.APISample.Default.Steps;
+using AdaptiveFlow.APISample.Models;
+using AdaptiveFlow.APISample.Steps;
 using Microsoft.AspNetCore.Mvc;
-using System.Text.Json;
 
-namespace AdaptiveFlow.APISample.Default.Controllers
+namespace AdaptiveFlow.APISample.Controllers
 {
     [ApiController]
     [Route("[controller]")]
@@ -16,7 +15,7 @@ namespace AdaptiveFlow.APISample.Default.Controllers
             _serviceProvider = serviceProvider;
         }
 
-        [HttpGet]
+        [HttpGet("DefaultStepWorkGroup")]
         public async Task<IActionResult> Get(CancellationToken cancellationToken)
         {
             var config = new FlowConfiguration()
@@ -27,27 +26,41 @@ namespace AdaptiveFlow.APISample.Default.Controllers
             var context = new FlowContext();
             var result = await flowManager.RunAsync(context, cancellationToken);
 
-            string jsonString = JsonSerializer.Serialize(result.Result);
-
             if (result.Success && result.Result != null)
             {
-                dynamic dynamicResult = result.Result;
-                var stepResults = (IList<object>)dynamicResult.StepResults.FirstOrDefault(); // Lista com [IEnumerable<WeatherForecast>]
-                var forecastCollection = stepResults.FirstOrDefault() as IEnumerable<WeatherForecastModel>; // Pega o primeiro item como a coleção
-                return Ok(forecastCollection ?? Array.Empty<WeatherForecastModel>());
+                FlowInnerResults innerResults = result.Result;
+                var forecastCollection = innerResults.StepResults.OfType<IEnumerable<WeatherForecastModel>>().FirstOrDefault();
+                return Ok(forecastCollection ?? []);
             }
 
+            return BadRequest(result.ErrorMessage ?? "Unknown error occurred");
+        }
+
+        [HttpGet("FromJsonWorkGroup")]
+        public async Task<IActionResult> GetFromJson(CancellationToken cancellationToken)
+        {
+            string jsonConfig = """[{"StepType": "GenerateForecastStep", "StepName": "Generate", "IsParallel": false},{"StepType": "LogForecastStep", "StepName": "Log", "IsParallel": false, "DependsOn": ["Generate"]}]""";     
+    
+            var stepRegistry = new Dictionary<string, Type>
+            {
+                { "GenerateForecastStep", typeof(GenerateForecastStep) },
+                { "LogForecastStep", typeof(LogForecastStep) }
+            };
+
+            var config = FlowConfiguration.FromJson(jsonConfig, _serviceProvider, stepRegistry);
+            var flowManager = new FlowManager(config);
+
+            var context = new FlowContext();
+            context.Data["StartDate"] = DateTime.Now;
+
+            var result = await flowManager.RunAsync(context, cancellationToken);
             if (result.Success && result.Result != null)
             {
-                // Acessa os forecasts diretamente do ContextData
-                if (context.Data.TryGetValue("Forecasts", out var forecastsObj) && forecastsObj is IEnumerable<WeatherForecastModel> forecasts)
-                {
-                    return Ok(forecasts);
-                }
-                return Ok(Array.Empty<WeatherForecastModel>()); // Fallback se não houver forecasts
+                FlowInnerResults innerResults = result.Result;
+                var forecastCollection = innerResults.StepResults.OfType<IEnumerable<WeatherForecastModel>>().FirstOrDefault();
+                return Ok(forecastCollection ?? []);
             }
-
-            return BadRequest(result.ErrorMessage);
+            return BadRequest(result.ErrorMessage ?? "Unknown error occurred");
         }
     }
 }

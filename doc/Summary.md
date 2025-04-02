@@ -22,6 +22,7 @@
 
 ## Records
 - [`FlowResult`](Records/FlowResult.md)
+- [`FlowInnerResults`](Records/FlowInnerResults.md)
 
 ## License
 - [`MIT License`](License.md)

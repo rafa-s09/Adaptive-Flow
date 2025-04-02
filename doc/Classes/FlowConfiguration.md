@@ -137,16 +137,15 @@ Creates a `FlowConfiguration` instance from a JSON string, dynamically instantia
 #### Example
 
 ```csharp
-var json = @"[
-    {'StepType': 'ValidateInput', 'StepName': 'Validate', 'IsParallel': false},
-    {'StepType': 'Compute', 'StepName': 'Compute', 'IsParallel': true, 'DependsOn': ['Validate']}
-]";
+string jsonConfig = """[{"StepType": "GenerateForecastStep", "StepName": "Generate", "IsParallel": false},{"StepType": "LogForecastStep", "StepName": "Log", "IsParallel": false, "DependsOn": ["Generate"]}]""";     
+    
 var stepRegistry = new Dictionary<string, Type>
 {
-    ["ValidateInput"] = typeof(ValidarEntradaStep),
-    ["Compute"] = typeof(ComputeStep)
+    { "GenerateForecastStep", typeof(GenerateForecastStep) },
+    { "LogForecastStep", typeof(LogForecastStep) }
 };
-var config = FlowConfiguration.FromJson(json, serviceProvider, stepRegistry);
+
+var config = FlowConfiguration.FromJson(jsonConfig, _serviceProvider, stepRegistry);
 ```
 
 ---
