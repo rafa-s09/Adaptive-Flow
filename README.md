@@ -44,13 +44,9 @@
     
 - See documentation [here](/doc/Summary.md)
 
-<br/><br/>
-
 # Contributions
 
 Feel free to open issues or pull requests in the repository. Suggestions to improve the library are always welcome!
-
-<br/><br/>
 
 # MIT License
 
