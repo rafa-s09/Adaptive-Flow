@@ -102,6 +102,7 @@ public class FlowConfiguration
     public static FlowConfiguration FromJson(string json, IServiceProvider serviceProvider, IReadOnlyDictionary<string, Type> stepRegistry)
     {
         if (json == null) throw new ArgumentNullException(nameof(json), "JSON configuration cannot be null.");
+        if (!ValidateJson(json)) throw new ArgumentException(nameof(json), "Invalid JSON.");
         if (serviceProvider == null) throw new ArgumentNullException(nameof(serviceProvider), "Service provider cannot be null.");
         if (stepRegistry == null) throw new ArgumentNullException(nameof(stepRegistry), "Step registry cannot be null.");
 
@@ -112,7 +113,6 @@ public class FlowConfiguration
         {
             if (!stepRegistry.TryGetValue(stepConfig.StepType, out Type? stepType))            
                 throw new ArgumentException($"Step type '{stepConfig.StepType}' is not registered in the step registry.", nameof(json));
-
 
             object stepInstance = serviceProvider.GetService(stepType) ?? throw new ArgumentException($"Could not resolve instance of '{stepConfig.StepType}' from the service provider.", nameof(json));
 
@@ -183,4 +183,25 @@ public class FlowConfiguration
     /// <param name="IsParallel">Indicates whether the step should be executed in parallel with other parallel steps. Defaults to false.</param>
     /// <param name="DependsOn">An optional array of step names that this step depends on, ensuring they execute first. Defaults to null.</param>
     private record StepConfig(string StepType, string StepName, bool IsParallel = false, string[]? DependsOn = null);
+
+
+    /// <summary>
+    /// Validates whether a given string is a well-formed JSON.
+    /// </summary>
+    /// <param name="json">The JSON string to validate.</param>
+    /// <returns>True if the JSON is valid; otherwise, false.</returns>
+    static bool ValidateJson(string json)
+    {
+        try
+        {
+            using (JsonDocument doc = JsonDocument.Parse(json))
+            {
+                return true;
+            }
+        }
+        catch (JsonException)
+        {
+            return false;
+        }
+    }
 }
