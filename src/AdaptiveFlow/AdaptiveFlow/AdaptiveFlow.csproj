@@ -12,7 +12,7 @@
     <ApplicationIcon>pkg_icon.ico</ApplicationIcon>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <Title>Adaptive Flow</Title>
-    <Description>AdaptiveFlow is a reusable library and a design pattern for orchestrating asynchronous workflows in .NET</Description>
+    <Description>AdaptiveFlow is a powerful solution for creating robust and adaptive workflows in .NET, combining simplicity with high performance.</Description>
     <PackageIcon>pkg_icon.png</PackageIcon>
     <PackageProjectUrl>https://github.com/rafa-s09/Adaptive-Flow</PackageProjectUrl>
     <Copyright>Rafael Souza</Copyright>
@@ -27,11 +27,11 @@
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>
-    <None Include="..\..\..\README.md">
+    <None Include="..\..\..\res\pkg_icon.png">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>
-    <None Include="..\..\..\res\pkg_icon.png">
+    <None Include="..\README.md">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>
