@@ -13,7 +13,7 @@ This guide will help you get started with ***AdaptiveFlow*** in your project in 
 ## Installation
 
 **1. Add the Package:**
-- Install via NuGet:
+- Install via [NuGet](https://www.nuget.org/packages/AdaptiveFlow/):
     ```bash
     dotnet add package AdaptiveFlow
     ```
