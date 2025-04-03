@@ -1,0 +1,23 @@
+graph TD
+A[Start] --> B[FlowConfiguration]
+B -->|Add Steps| C[FlowManager]
+C --> D[FlowContext Created]
+D --> E[EnqueueAsync]
+E --> F[Channel]
+F -->|ProcessAsync| G{IChannelProcessor}
+G --> H[SemaphoreSlim]
+H --> I{Steps to Execute}
+I -->|Yes| J[Check Dependencies]
+J -->|Met| K{IsParallel?}
+K -->|Yes| L[Parallel.ForEachAsync]
+K -->|No| M[Execute Sequentially]
+L --> N[Execute Step]
+M --> N
+N --> O[Store Result]
+O --> P{All Steps Executed?}
+P -->|No| I
+P -->|Yes| Q[FlowResult]
+Q --> R[End]
+I -->|No| S[Detects Deadlock]
+S --> T[FlowResult with Error]
+T --> R
