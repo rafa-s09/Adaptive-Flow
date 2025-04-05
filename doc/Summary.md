@@ -2,6 +2,7 @@
 
 ## General
 - [`Introduction`](Introduction.md)
+- [`How AdaptiveFlow Works (Conceptual Overview)`](ConceptualOverview.md)
 - [`Conventions`](Conventions.md)
 - [`Getting Started`](Getting%20Started.md)
 
