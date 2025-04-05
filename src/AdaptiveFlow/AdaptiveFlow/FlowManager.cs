@@ -90,8 +90,11 @@ public class FlowManager
     /// </summary>
     protected internal async Task<FlowResult> ExecuteFlowAsync(FlowContext context, CancellationToken cancellationToken) 
     {
+        if (_config.Steps.Count < 1)
+            throw new InvalidOperationException("Cannot execute a flow with an empty step configuration. Add at least one step to the FlowConfiguration.");
+
         try
-        {
+        {           
             _logger?.LogInformation("Starting flow execution with {StepCount} steps.", _config.Steps.Count);
             await _semaphore.WaitAsync(cancellationToken);
             try
