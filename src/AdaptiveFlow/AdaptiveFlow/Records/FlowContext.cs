@@ -13,7 +13,7 @@ public class FlowContext
     /// </summary>
     public FlowContext() => _scopes.TryAdd("default", new ConcurrentDictionary<string, object?>());
 
-    // <summary>
+    /// <summary>
     /// Retrieves a value of type <typeparamref name="T"/> associated with the specified key and scope.
     /// </summary>
     /// <typeparam name="T">The expected type of the value.</typeparam>
