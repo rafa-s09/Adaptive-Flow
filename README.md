@@ -1,4 +1,9 @@
+# AdaptiveFlow
+
 **AdaptiveFlow** is a robust, reusable library and design pattern tailored for orchestrating asynchronous workflows in .NET. Its goal is to simplify the configuration and execution of sequences of steps while supporting advanced features like **dependencies**, **parallelism**, **dynamic configuration via JSON**, and **optional logging**. Ideal for applications requiring high-performance and adaptable pipelines, AdaptiveFlow excels in scenarios where flexibility and testability are paramount.
+
+[![NuGet Version](https://img.shields.io/nuget/v/AdaptiveFlow)](https://www.nuget.org/packages/AdaptiveFlow/)
+
 
 ## How it Works
 
