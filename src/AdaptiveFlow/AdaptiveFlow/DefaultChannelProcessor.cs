@@ -1,7 +1,17 @@
 ﻿namespace AdaptiveFlow;
 
+/// <summary>
+/// The default implementation of the <see cref="IChannelProcessor"/> interface.
+/// Processes flow contexts from a channel and executes them using a <see cref="FlowManager"/>.
+/// </summary>
 public class DefaultChannelProcessor : IChannelProcessor
 {
+    /// <summary>
+    /// Reads flow contexts from the channel managed by the <see cref="FlowManager"/>, 
+    /// executes them asynchronously, and logs the results.
+    /// </summary>
+    /// <param name="manager">The <see cref="FlowManager"/> responsible for managing the workflow execution and channel.</param>
+    /// <returns>A task that represents the asynchronous operation of processing flow contexts.</returns>
     public async Task ProcessAsync(FlowManager manager)
     {
         ChannelReader<FlowContext> channelReader = manager.GetChannel().Reader;

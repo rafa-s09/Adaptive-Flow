@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using AdaptiveFlow.Tests.Steps;
+using Microsoft.Extensions.Logging;
 using Moq;
 
 namespace AdaptiveFlow.Tests;
@@ -77,7 +78,38 @@ public class MainTest
         stepMock.Verify(s => s.ExecuteAsync(It.IsAny<FlowContext>(), It.IsAny<CancellationToken>()), Times.Exactly(numContexts));
     }
 
+    [Fact]
+    public void FromJson_Should_Load_Configuration_From_Valid_Json()
+    {
+        // Arrange
+        var json = @"
+    [
+        { ""StepType"": ""MockStepType"", ""StepName"": ""Step1"", ""IsParallel"": true, ""DependsOn"": [""Step2""] },
+        { ""StepType"": ""MockStepType"", ""StepName"": ""Step2"", ""IsParallel"": false }
+    ]";
 
+        var stepRegistry = new Dictionary<string, Type>
+    {
+        { "MockStepType", typeof(MockStep) }
+    };
+
+        var serviceProviderMock = new Mock<IServiceProvider>();
+        serviceProviderMock.Setup(sp => sp.GetService(typeof(MockStep)))
+                           .Returns(new MockStep());
+
+        // Act
+        var configuration = FlowConfiguration.FromJson(json, serviceProviderMock.Object, stepRegistry);
+
+        // Assert
+        Assert.NotNull(configuration);
+        var steps = configuration.GetSteps();
+        Assert.Equal(2, steps.Count);
+        Assert.Equal("Step1", steps[0].Item2); // Verifica o nome do passo
+        Assert.True(steps[0].Item4);          // Verifica se é paralelo
+        Assert.Contains("Step2", steps[0].Item5); // Verifica dependências
+        Assert.Equal("Step2", steps[1].Item2); // Verifica o nome do segundo passo
+        Assert.False(steps[1].Item4);         // Verifica se não é paralelo
+    }
 
 
 }

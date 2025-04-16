@@ -1,5 +1,9 @@
 ﻿namespace AdaptiveFlow;
 
+/// <summary>
+/// Manages the execution of asynchronous workflows defined by a FlowConfiguration. 
+/// Supports concurrency, parallelism, and logging.
+/// </summary>
 public class FlowManager
 {
     private readonly FlowConfiguration _config;
@@ -9,6 +13,15 @@ public class FlowManager
     private readonly ILogger<FlowManager>? _logger; 
     private readonly IChannelProcessor _channelProcessor;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="FlowManager"/> class with the specified configuration and options.
+    /// </summary>
+    /// <param name="config">The flow configuration containing the steps to be executed.</param>
+    /// <param name="logger">Optional logger for logging execution details.</param>
+    /// <param name="channelProcessor">Optional custom channel processor. Defaults to <see cref="DefaultChannelProcessor"/>.</param>
+    /// <param name="maxConcurrency">The maximum number of concurrent tasks allowed. Defaults to 5.</param>
+    /// <param name="maxParallelism">The maximum number of parallel steps allowed. Defaults to 4.</param>
+    /// <param name="channelCapacity">The capacity of the processing channel. Defaults to 1000.</param>
     public FlowManager(FlowConfiguration config, ILogger<FlowManager>? logger = null, IChannelProcessor? channelProcessor = null, int maxConcurrency = 5, int maxParallelism = 4, int channelCapacity = 1000)
     {
         _config = config ?? throw new ArgumentNullException(nameof(config), "Configuration cannot be null.");
@@ -24,11 +37,22 @@ public class FlowManager
         _channelProcessor = channelProcessor ?? new DefaultChannelProcessor();
     }
 
+    /// <summary>
+    /// Starts processing contexts in the channel asynchronously.
+    /// </summary>
+    /// <returns>A task representing the asynchronous processing operation.</returns>
     public Task StartProcessingAsync()
     {
         return Task.Run(() => _channelProcessor.ProcessAsync(this));
     }
 
+    /// <summary>
+    /// Enqueues a flow context into the channel for processing.
+    /// </summary>
+    /// <param name="context">The flow context to enqueue.</param>
+    /// <param name="cancellationToken">The cancellation token to observe.</param>
+    /// <exception cref="ChannelClosedException">Thrown if the channel is closed while enqueuing.</exception>
+    /// <returns>A task that represents the asynchronous enqueue operation.</returns>
     public async Task EnqueueAsync(FlowContext context, CancellationToken cancellationToken = default)
     {
         cancellationToken.ThrowIfCancellationRequested();
@@ -44,8 +68,21 @@ public class FlowManager
         }
     }
 
+    /// <summary>
+    /// Executes a flow synchronously for the given context.
+    /// </summary>
+    /// <param name="context">The flow context containing data for the flow.</param>
+    /// <param name="cancellationToken">The cancellation token to observe.</param>
+    /// <returns>A <see cref="FlowResult"/> representing the result of the execution.</returns>
     public async Task<FlowResult> RunAsync(FlowContext context, CancellationToken cancellationToken = default) => await ExecuteFlowAsync(context, cancellationToken);
 
+    /// <summary>
+    /// Executes the flow with the given context and handles parallel and sequential step execution.
+    /// </summary>
+    /// <param name="context">The flow context containing data for the flow.</param>
+    /// <param name="cancellationToken">The cancellation token to observe.</param>
+    /// <returns>A <see cref="FlowResult"/> representing the result of the execution.</returns>
+    /// <exception cref="InvalidOperationException">Thrown if the configuration does not contain any steps.</exception>
     protected internal async Task<FlowResult> ExecuteFlowAsync(FlowContext context, CancellationToken cancellationToken) 
     {
         if (_config.Steps.Count < 1)
@@ -146,9 +183,20 @@ public class FlowManager
         }
     }
 
+    /// <summary>
+    /// Closes the channel to signal that no more items will be added.
+    /// </summary>
     public void EndChannel() => _channel.Writer.Complete();
 
+    /// <summary>
+    /// Gets the processing channel for enqueuing or reading flow contexts.
+    /// </summary>
+    /// <returns>The <see cref="Channel{FlowContext}"/> being used by the manager.</returns>
     public Channel<FlowContext> GetChannel() => _channel;
 
+    /// <summary>
+    /// Gets the logger used by the manager.
+    /// </summary>
+    /// <returns>The <see cref="ILogger{FlowManager}"/> instance or null if no logger is configured.</returns>
     public ILogger<FlowManager>? GetLogger() => _logger;
 }
