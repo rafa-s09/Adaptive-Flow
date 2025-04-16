@@ -16,7 +16,7 @@
     <PackageIcon>pkg_icon.png</PackageIcon>
     <PackageProjectUrl>https://github.com/rafa-s09/Adaptive-Flow</PackageProjectUrl>
     <Copyright>Rafael Souza</Copyright>
-    <Version>1.0.1</Version>
+    <Version>1.1.0</Version>
   </PropertyGroup>
 
   <ItemGroup>
