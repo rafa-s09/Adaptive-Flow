@@ -7,8 +7,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdaptiveFlow", "AdaptiveFlo
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{F021E22D-A337-4A69-BAC5-4C9E7610DA20}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdaptiveFlow.APISample", "AdaptiveFlow.APISample\AdaptiveFlow.APISample.csproj", "{0C54F3C8-4AEF-4E37-B8E4-C6A67EE49C7A}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdaptiveFlow.Tests", "AdaptiveFlow.Test\AdaptiveFlow.Tests.csproj", "{5C7AB681-FB40-4096-8117-A1206DE2D33D}"
 EndProject
 Global
@@ -21,10 +19,6 @@ Global
 		{EC2B33FE-F951-4BE8-8E59-BC618BE2A389}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EC2B33FE-F951-4BE8-8E59-BC618BE2A389}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EC2B33FE-F951-4BE8-8E59-BC618BE2A389}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0C54F3C8-4AEF-4E37-B8E4-C6A67EE49C7A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0C54F3C8-4AEF-4E37-B8E4-C6A67EE49C7A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0C54F3C8-4AEF-4E37-B8E4-C6A67EE49C7A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0C54F3C8-4AEF-4E37-B8E4-C6A67EE49C7A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{5C7AB681-FB40-4096-8117-A1206DE2D33D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{5C7AB681-FB40-4096-8117-A1206DE2D33D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5C7AB681-FB40-4096-8117-A1206DE2D33D}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -32,9 +26,6 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{0C54F3C8-4AEF-4E37-B8E4-C6A67EE49C7A} = {F021E22D-A337-4A69-BAC5-4C9E7610DA20}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {683F12A4-57EE-4DD6-A6A3-4A9099F79CDB}
