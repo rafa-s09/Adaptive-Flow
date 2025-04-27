@@ -1,19 +1,20 @@
-﻿namespace AdaptiveFlow;
+﻿namespace AdaptiveFlow.Interfaces;
 
 /// <summary>
-/// Defines an interface for a flow step that does not return a value.
-/// Provides a method for executing the step asynchronously.
+/// Represents a step in a flow that can be executed asynchronously.
 /// </summary>
 public interface IFlowStep
 {
     /// <summary>
-    /// Executes the flow step asynchronously.
+    /// Executes the step asynchronously, providing access to the FlowContext.
     /// </summary>
-    /// <param name="context">The flow context containing data for the execution.</param>
-    /// <param name="cancellationToken">The cancellation token to observe during execution. Defaults to none.</param>
+    /// <param name="context">The FlowContext containing shared data between steps.</param>
+    /// <param name="cancellationToken">
+    /// A token to monitor for cancellation requests. The default value is CancellationToken.None.
+    /// </param>
     /// <returns>
-    /// A task representing the asynchronous execution operation.
+    /// A task that represents the asynchronous execution of the step.
+    /// May return an object or null, depending on the step's implementation.
     /// </returns>
-    Task ExecuteAsync(FlowContext context, CancellationToken cancellationToken = default);
+    Task<object?> ExecuteAsync(FlowContext context, CancellationToken cancellationToken = default);
 }
-

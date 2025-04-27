@@ -1,202 +1,137 @@
 ﻿namespace AdaptiveFlow;
 
 /// <summary>
-/// Manages the execution of asynchronous workflows defined by a FlowConfiguration. 
-/// Supports concurrency, parallelism, and logging.
+/// Manages the execution of flow steps based on orchestration rules.
+/// Handles dependency resolution, execution order, concurrency, and error capturing.
 /// </summary>
-public class FlowManager
+public class FlowManager : IDisposable
 {
-    private readonly FlowConfiguration _config;
-    private readonly Channel<FlowContext> _channel;
+    #region Dispose
+
+    /// <summary>
+    /// Destructor for the FlowManager class.
+    /// Ensures that the Dispose method is called for cleanup when the object is finalized.
+    /// </summary>
+    ~FlowManager() => Dispose();
+
+    /// <summary>
+    /// Disposes of the resources used by the FlowManager.
+    /// Clears all steps and suppresses finalization.
+    /// </summary>
+    public void Dispose()
+    {
+        _orchestrator.Dispose();
+        _semaphore.Release();
+        GC.SuppressFinalize(this);
+    }
+
+    #endregion Dispose
+
+    #region Variables
+
+    private readonly FlowOrchestrator _orchestrator;
     private readonly SemaphoreSlim _semaphore;
-    private readonly int _maxParallelism;
-    private readonly ILogger<FlowManager>? _logger; 
-    private readonly IChannelProcessor _channelProcessor;
+
+    #endregion Variables
+
+    #region Construtor
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="FlowManager"/> class with the specified configuration and options.
+    /// Initializes a new instance of the FlowManager class.
     /// </summary>
-    /// <param name="config">The flow configuration containing the steps to be executed.</param>
-    /// <param name="logger">Optional logger for logging execution details.</param>
-    /// <param name="channelProcessor">Optional custom channel processor. Defaults to <see cref="DefaultChannelProcessor"/>.</param>
-    /// <param name="maxConcurrency">The maximum number of concurrent tasks allowed. Defaults to 5.</param>
-    /// <param name="maxParallelism">The maximum number of parallel steps allowed. Defaults to 4.</param>
-    /// <param name="channelCapacity">The capacity of the processing channel. Defaults to 1000.</param>
-    public FlowManager(FlowConfiguration config, ILogger<FlowManager>? logger = null, IChannelProcessor? channelProcessor = null, int maxConcurrency = 5, int maxParallelism = 4, int channelCapacity = 1000)
+    /// <param name="orchestrator">The FlowOrchestrator containing the flow steps to execute.</param>
+    /// <param name="maxParallelism">The maximum number of parallel executions allowed.</param>
+    public FlowManager(FlowOrchestrator orchestrator, int maxParallelism = 4)
     {
-        _config = config ?? throw new ArgumentNullException(nameof(config), "Configuration cannot be null.");
-        _semaphore = new SemaphoreSlim(maxConcurrency);
-        _maxParallelism = maxParallelism;
-        _logger = logger;
-        _channel = Channel.CreateBounded<FlowContext>(new BoundedChannelOptions(channelCapacity)
-        {
-            FullMode = BoundedChannelFullMode.Wait,
-            SingleReader = true,
-            AllowSynchronousContinuations = true
-        });
-        _channelProcessor = channelProcessor ?? new DefaultChannelProcessor();
+        _orchestrator = orchestrator ?? throw new ArgumentNullException(nameof(orchestrator));
+        _semaphore = new SemaphoreSlim(maxParallelism, maxParallelism);
+
+        ValidateSteps();
     }
 
+    #endregion Construtor
+
+    #region Validate
+
     /// <summary>
-    /// Starts processing contexts in the channel asynchronously.
+    /// Validates the flow steps ensuring that there are no duplicate names
+    /// and that all dependencies are correctly defined.
     /// </summary>
-    /// <returns>A task representing the asynchronous processing operation.</returns>
-    public Task StartProcessingAsync()
+    /// <exception cref="FlowOrchestrationException">Thrown when a duplicate step or missing dependency is found.</exception>
+    private void ValidateSteps()
     {
-        return Task.Run(() => _channelProcessor.ProcessAsync(this));
-    }
+        var steps = _orchestrator.GetSteps();
+        var stepNames = new HashSet<FlowKey>();
 
-    /// <summary>
-    /// Enqueues a flow context into the channel for processing.
-    /// </summary>
-    /// <param name="context">The flow context to enqueue.</param>
-    /// <param name="cancellationToken">The cancellation token to observe.</param>
-    /// <exception cref="ChannelClosedException">Thrown if the channel is closed while enqueuing.</exception>
-    /// <returns>A task that represents the asynchronous enqueue operation.</returns>
-    public async Task EnqueueAsync(FlowContext context, CancellationToken cancellationToken = default)
-    {
-        cancellationToken.ThrowIfCancellationRequested();
-        _logger?.LogInformation("Enqueuing flow context for processing.");
-        try
+        foreach (var step in steps)
         {
-            await _channel.Writer.WriteAsync(context, cancellationToken);
-        }
-        catch (ChannelClosedException ex)
-        {
-            _logger?.LogError(ex, "Failed to enqueue context: Channel is closed.");
-            throw;
-        }
-    }
+            if (!stepNames.Add(step.Name))
+                throw new FlowOrchestrationException($"Duplicate step name detected: {step.Name}");
 
-    /// <summary>
-    /// Executes a flow synchronously for the given context.
-    /// </summary>
-    /// <param name="context">The flow context containing data for the flow.</param>
-    /// <param name="cancellationToken">The cancellation token to observe.</param>
-    /// <returns>A <see cref="FlowResult"/> representing the result of the execution.</returns>
-    public async Task<FlowResult> RunAsync(FlowContext context, CancellationToken cancellationToken = default) => await ExecuteFlowAsync(context, cancellationToken);
-
-    /// <summary>
-    /// Executes the flow with the given context and handles parallel and sequential step execution.
-    /// </summary>
-    /// <param name="context">The flow context containing data for the flow.</param>
-    /// <param name="cancellationToken">The cancellation token to observe.</param>
-    /// <returns>A <see cref="FlowResult"/> representing the result of the execution.</returns>
-    /// <exception cref="InvalidOperationException">Thrown if the configuration does not contain any steps.</exception>
-    protected internal async Task<FlowResult> ExecuteFlowAsync(FlowContext context, CancellationToken cancellationToken) 
-    {
-        if (_config.Steps.Count < 1)
-            throw new InvalidOperationException("Cannot execute a flow with an empty step configuration. Add at least one step to the FlowConfiguration.");
-
-        try
-        {
-            if (_logger?.IsEnabled(LogLevel.Information) == true)
-                _logger.LogInformation("Starting flow execution with {StepCount} steps.", _config.Steps.Count);
-
-            await _semaphore.WaitAsync(cancellationToken);
-            try
+            foreach (var dependency in step.Dependencies)
             {
-                List<object> results = [];
-                object resultsLock = new();
-                HashSet<string> executedSteps = new(StringComparer.Ordinal);
-                List<(IFlowStepWrapper Step, string StepName, Func<FlowContext, bool> Condition, bool IsParallel, string[] DependsOn)> remainingSteps = [.. _config.Steps];
-                List<(IFlowStepWrapper Step, string StepName, Func<FlowContext, bool> Condition, bool IsParallel, string[] DependsOn)> executableParallel = [.. remainingSteps.Where(s => s.IsParallel && s.Condition(context) && s.DependsOn.All(dep => executedSteps.Contains(dep)))];
-                List<(IFlowStepWrapper Step, string StepName, Func<FlowContext, bool> Condition, bool IsParallel, string[] DependsOn)> executableSequential = [.. remainingSteps.Where(s => !s.IsParallel && s.Condition(context) && s.DependsOn.All(dep => executedSteps.Contains(dep)))];
+                if (!steps.Any(s => s.Name == dependency))
+                    throw new FlowOrchestrationException($"Dependency '{dependency}' for step '{step.Name}' not found.");
+            }
+        }
+    }
 
-                while (remainingSteps.Count != 0)
+    #endregion Validate
+
+    #region Execute
+
+    /// <summary>
+    /// Executes the flow steps according to their dependencies and conditions.
+    /// Handles concurrency and collects the execution results.
+    /// </summary>
+    /// <param name="context">The execution context shared across steps.</param>
+    /// <param name="cancellationToken">Token for cancelling the execution.</param>
+    /// <returns>A list of FlowResult containing the execution outcome for each step.</returns>
+    /// <exception cref="FlowOrchestrationException">Thrown when the flow cannot progress due to unresolved dependencies (deadlock).</exception>
+    public async Task<List<FlowResult>> ExecuteAsync(FlowContext context, CancellationToken cancellationToken = default)
+    {
+        List<FlowStepDescriptor>? steps = [.. _orchestrator.GetSteps()];
+        HashSet<FlowKey>? executedSteps = [];
+        List<FlowResult>? results = [];
+
+        while (executedSteps.Count < steps.Count)
+        {
+            List<FlowStepDescriptor> readySteps = [.. steps.Where(s => !executedSteps.Contains(s.Name)).Where(s => s.Dependencies.All(dep => executedSteps.Contains(dep))).Where(s => s.Condition == null || s.Condition(context))];
+
+            if (readySteps.Count == 0)
+                throw new FlowOrchestrationException("Cannot resolve dependencies. Deadlock or missing dependency detected.");
+
+            List<Task<FlowResult>>? taskList = [];
+
+            foreach (var stepDescriptor in readySteps)
+            {
+                async Task<FlowResult> ExecuteStepAsync(FlowStepDescriptor descriptor)
                 {
-                    executableParallel.Clear();
-                    executableSequential.Clear();
+                    await _semaphore.WaitAsync(cancellationToken);
 
-                    foreach (var step in remainingSteps)
+                    try
                     {
-                        if (!step.Condition(context)) continue;
-                        if (step.DependsOn.Any(dep => !executedSteps.Contains(dep))) continue;
-
-                        if (step.IsParallel)
-                            executableParallel.Add(step);
-                        else
-                            executableSequential.Add(step);
+                        var output = await descriptor.Step.ExecuteAsync(context, cancellationToken);
+                        return new FlowResult(descriptor.Name, true, output);
                     }
-
-                    if (executableParallel.Count < 1 && executableSequential.Count < 1)
+                    catch (Exception ex)
                     {
-                        var unexecuted = string.Join(", ", remainingSteps.Select(s => s.StepName));
-                        _logger?.LogError("Deadlock detected: remaining steps ({Unexecuted}) cannot be executed due to unmet dependencies.", unexecuted);
-                        return FlowResult.Fail(FlowError.Deadlock(unexecuted));
+                        return new FlowResult(descriptor.Name, false, null, new FlowManagerException($"Step {descriptor.Name} throws an exception.", ex));
                     }
-
-                    if (executableParallel.Count > 0)
+                    finally
                     {
-                        if (_logger?.IsEnabled(LogLevel.Debug) == true)
-                            _logger.LogDebug("Executing {Count} parallel steps.", executableParallel.Count);
-
-                        var tasks = executableParallel.Select(async s =>
-                        {
-                            var result = await s.Step.ExecuteAsync(context, cancellationToken);
-                            if (result != null)                            
-                                lock (resultsLock)                                
-                                    results.Add(result);                        
-
-                            lock (executedSteps)                            
-                                executedSteps.Add(s.StepName);  
-                        });
-                        await Task.WhenAll(tasks);
-
-                        remainingSteps.RemoveAll(s => executableParallel.Contains(s));
-                    }
-
-                    foreach (var s in executableSequential)
-                    {
-                        cancellationToken.ThrowIfCancellationRequested();
-                        _logger?.LogDebug("Executing sequential step: {StepName}", s.StepName);
-                        var result = await s.Step.ExecuteAsync(context, cancellationToken);
-                        if (result != null)                        
-                            lock (resultsLock)                            
-                                results.Add(result);                            
-                        
-                        executedSteps.Add(s.StepName);
-                        remainingSteps.Remove(s);
-                        break;
+                        _semaphore.Release();
                     }
                 }
+                taskList.Add(ExecuteStepAsync(stepDescriptor));
+            }
 
-                if (_logger?.IsEnabled(LogLevel.Information) == true)
-                    _logger.LogInformation("Flow execution completed successfully with {ResultCount} step results.", results.Count);
-                
-                return FlowResult.Ok(context.AsReadOnly("default"));
-            }
-            finally
-            {
-                _semaphore.Release();
-            }
+            var stepResults = await Task.WhenAll(taskList);
+            results.AddRange(stepResults);
         }
-        catch (OperationCanceledException ex)
-        {
-            _logger?.LogWarning(ex, "Flow execution was canceled.");
-            return FlowResult.Fail(FlowError.Cancelled());
-        }
-        catch (Exception ex)
-        {
-            _logger?.LogError(ex, "Flow execution failed.");
-            return FlowResult.Fail(new FlowError("UNHANDLED_EXCEPTION", ex.Message, null, ex));
-        }
+
+        return results;
     }
 
-    /// <summary>
-    /// Closes the channel to signal that no more items will be added.
-    /// </summary>
-    public void EndChannel() => _channel.Writer.Complete();
-
-    /// <summary>
-    /// Gets the processing channel for enqueuing or reading flow contexts.
-    /// </summary>
-    /// <returns>The <see cref="Channel{FlowContext}"/> being used by the manager.</returns>
-    public Channel<FlowContext> GetChannel() => _channel;
-
-    /// <summary>
-    /// Gets the logger used by the manager.
-    /// </summary>
-    /// <returns>The <see cref="ILogger{FlowManager}"/> instance or null if no logger is configured.</returns>
-    public ILogger<FlowManager>? GetLogger() => _logger;
+    #endregion Execute
 }
